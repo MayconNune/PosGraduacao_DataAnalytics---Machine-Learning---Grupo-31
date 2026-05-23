@@ -1,53 +1,169 @@
-🍷 Classificação de Qualidade de Vinhos com Machine Learning
+# 🍷 Descobrindo a Qualidade de Vinhos com Machine Learning
 
-Projeto desenvolvido como parte do Tech Challenge da Fase 2 da Pós-Graduação em Data Analytics — POSTECH
+> Projeto desenvolvido para o Tech Challenge — Fase 2 da Pós-Graduação em Data Analytics (POSTECH)
 
+---
 
-📌 Sobre o Projeto
-A avaliação de vinhos tradicionalmente é feita por especialistas, o que pode ser um processo demorado e subjetivo. A ideia deste projeto é usar dados físico-químicos dos vinhos — como acidez, teor alcoólico e pH — para treinar modelos de Machine Learning que consigam prever automaticamente se um vinho é de alta qualidade ou não.
-Para isso, usamos o Wine Quality Dataset do Kaggle, onde cada amostra de vinho já tem uma nota dada por especialistas. Transformamos essa nota em uma classificação simples:
+## 🧠 O desafio
 
-✅ Alta Qualidade → nota ≥ 7
+Avaliar a qualidade de um vinho normalmente depende da experiência de especialistas, que analisam diversos fatores para chegar a uma nota final. Mas surge uma pergunta:
+
+**Será que um modelo de Machine Learning consegue aprender esses padrões e prever a qualidade de um vinho automaticamente?**
+
+Neste projeto utilizamos características físico-químicas dos vinhos — como acidez, teor alcoólico, pH, sulfatos e densidade — para treinar modelos capazes de identificar se um vinho possui **alta qualidade** ou **baixa/média qualidade**.
+
+Transformamos as notas originais do dataset em uma classificação binária:
+
+✅ Alta Qualidade → nota ≥ 7  
 ❌ Baixa/Média Qualidade → nota < 7
 
-Treinamos e comparamos 3 modelos: Regressão Logística, Random Forest e XGBoost, avaliando qual deles performa melhor nessa tarefa.
+---
 
-📂 Estrutura do Repositório
+## 🎯 Objetivo
+
+Desenvolver, treinar e comparar diferentes modelos de Machine Learning para descobrir:
+
+- Qual modelo apresenta o melhor desempenho
+- Quais características mais influenciam na qualidade do vinho
+- Como interpretar os resultados de forma simples e objetiva
+
+---
+
+## 📂 Estrutura do projeto
+
+```bash
 PosGraduacao_DataAnalytics---Machine-Learning---Grupo-31/
 │
-├── data/               # Base de dados utilizada
-├── notebooks/          # Notebooks com análise e modelagem
-├── src/                # Scripts auxiliares
-├── results/            # Gráficos e métricas dos modelos
-├── requirements.txt    # Bibliotecas utilizadas
-└── README.md           # Descrição do projeto
+├── data/                # Base de dados utilizada
+├── notebooks/           # Exploração, análises e modelagem
+├── src/                 # Scripts auxiliares
+├── results/             # Resultados, métricas e gráficos
+├── requirements.txt     # Dependências do projeto
+└── README.md
+```
 
-🤖 Modelos Utilizados
-ModeloResponsávelRegressão LogísticaA definirRandom ForestA definirXGBoostA definir
+---
 
-📊 Dataset
+## 🔍 Dataset utilizado
 
-Fonte: Wine Quality Dataset — Kaggle
-Variáveis: Acidez fixa, acidez volátil, ácido cítrico, açúcar residual, cloretos, dióxido de enxofre livre, dióxido de enxofre total, densidade, pH, sulfatos, teor alcoólico e qualidade
+**Wine Quality Dataset**
 
+O conjunto de dados contém informações físico-químicas dos vinhos, como:
 
-🔄 Pipeline do Projeto
+🍇 Acidez fixa  
+🍇 Acidez volátil  
+🍇 Ácido cítrico  
+🍇 Açúcar residual  
+🍇 Cloretos  
+🍇 Dióxido de enxofre livre e total  
+🍇 Densidade  
+🍇 pH  
+🍇 Sulfatos  
+🍇 Teor alcoólico  
+🍇 Qualidade
 
-• Compreensão do problema e definição da variável alvo
-• Análise Exploratória de Dados (EDA)
-• Pré-processamento dos dados
-• Desenvolvimento e treinamento dos modelos
-• Avaliação e comparação dos modelos
-• Interpretação dos resultados
+Fonte:
 
+https://www.kaggle.com/datasets/yasserh/wine-quality-dataset
 
-👥 Integrantes — Grupo 31
-• Carlos Henrique Freitas -
-• Vinicius Lopes Romão -
-• Maycon Suel da Silva -
+---
 
-🎓 Informações do Curso
+## 🤖 Modelos utilizados
 
-Curso: Pós-Graduação em Data Analytics
-Fase: 2 — Machine Learning
-Instituição: FIAP
+Testamos abordagens diferentes, começando de modelos mais simples até modelos mais sofisticados.
+
+### 📈 Regressão Logística
+
+Modelo utilizado como base de comparação.
+
+**Por que usar?**
+- Fácil interpretação
+- Rápido para treinar
+- Permite entender o impacto das variáveis
+
+---
+
+### 🌳 Random Forest
+
+Uma "floresta" formada por várias árvores de decisão trabalhando juntas.
+
+**Por que usar?**
+
+- Boa performance
+- Resistente a ruídos
+- Gera importância das variáveis automaticamente
+
+---
+
+### 🚀 XGBoost
+
+Modelo focado em melhorar seus próprios erros a cada etapa.
+
+**Por que usar?**
+
+- Excelente desempenho
+- Muito utilizado no mercado
+- Ótimo para problemas de classificação
+
+---
+
+## 🔄 Pipeline do projeto
+
+Nosso fluxo de trabalho seguiu as seguintes etapas:
+
+1️⃣ Entendimento do problema
+
+2️⃣ Análise exploratória dos dados (EDA)
+
+3️⃣ Pré-processamento
+
+4️⃣ Treinamento dos modelos
+
+5️⃣ Avaliação de desempenho
+
+6️⃣ Interpretação dos resultados
+
+---
+
+## 📊 Métricas utilizadas
+
+Como apenas acurácia pode ser enganosa, utilizamos múltiplas métricas:
+
+- Accuracy
+- Precision
+- Recall
+- F1-Score
+- ROC-AUC
+- Matriz de Confusão
+
+---
+
+## 📌 Principais perguntas que queremos responder
+
+- O álcool realmente influencia na qualidade?
+- A acidez tem impacto relevante?
+- Quais variáveis possuem maior peso na classificação?
+- O modelo consegue identificar vinhos de alta qualidade de forma confiável?
+
+---
+
+## 👥 Integrantes — Grupo 31
+
+| Nome | GitHub |
+|---|---|
+| Carlos Henrique Freitas | — |
+| Vinicius Lopes Romão | — |
+| Maycon Suel da Silva Nunes | https://github.com/MayconNune |
+
+---
+
+## 🎓 Sobre o projeto
+
+**Curso:** Pós-Graduação em Data Analytics  
+**Instituição:** POSTECH  
+**Fase:** Tech Challenge — Fase 2  
+**Grupo:** 31
+
+---
+
+### "Entre química e Machine Learning, tentamos descobrir o que faz um vinho ser realmente bom." 🍷
