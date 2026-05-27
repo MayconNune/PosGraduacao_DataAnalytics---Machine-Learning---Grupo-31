@@ -151,8 +151,8 @@ Como apenas acurácia pode ser enganosa, utilizamos múltiplas métricas:
 
 | Nome | GitHub |
 |---|---|
-| Carlos Henrique Freitas | — |
-| Vinicius Lopes Romão | — |
+| Carlos Henrique Freitas | https://github.com/Finnagun |
+| Vinicius Lopes Romão | https://github.com/viniromao159 |
 | Maycon Suel da Silva Nunes | https://github.com/MayconNune |
 
 ---
