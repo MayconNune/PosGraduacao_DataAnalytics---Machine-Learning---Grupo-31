@@ -506,8 +506,7 @@ PosGraduacao_DataAnalytics---Machine-Learning---Grupo-31/
 │
 ├── results/                          # Gráficos e artefatos gerados
 ├── requirements.txt                  # Dependências
-├── README.md                         # Este documento
-└── README_v1.md                      # Versão anterior do README
+└── README.md                         # Este documento
 ```
 
 ---
