@@ -2,6 +2,56 @@
 
 Classificação binária da qualidade de vinhos tintos portugueses (Vinho Verde) a partir de características físico-químicas. Projeto desenvolvido para o Tech Challenge — Fase 2 da Pós-Graduação em Data Analytics (POSTECH), Grupo 31.
 
+## Equipe — Grupo 31
+
+**Curso**: Pós-Graduação em Data Analytics — POSTECH  
+**Fase**: Tech Challenge — Fase 2  
+**Grupo**: 31
+
+
+| Nome | GitHub |
+|---|---|
+| Carlos Henrique Freitas | [Finnagun](https://github.com/Finnagun) |
+| Vinicius Lopes Romão | [viniromao159](https://github.com/viniromao159) |
+| Maycon Suel da Silva Nunes | [MayconNune](https://github.com/MayconNune) |
+
+## Como usar
+
+1. Clone o repositório
+2. Instale as dependências: `pip install -r requirements.txt`
+3. Execute os notebooks na ordem:
+   - `notebooks/Analise_Base_Vinhos.ipynb` — EDA
+   - `models/logisticregression.ipynb` — Regressão Logística
+   - `models/randomforest.ipynb` — Random Forest
+   - `models/xgboost.ipynb` — XGBoost
+   - `notebooks/Comparacao_Resultados.ipynb` — Comparação final
+
+## Estrutura do projeto
+
+```
+PosGraduacao_DataAnalytics---Machine-Learning---Grupo-31/
+│
+├── data/
+│   ├── WineQT.csv                    # Dataset original
+│   ├── base_wine_limpa.csv           # Após limpeza (EDA)
+│   ├── resultados_logistica.csv      # Predições Regressão Logística
+│   ├── resultados_random_forest.csv  # Predições Random Forest
+│   └── resultados_xgboost.csv        # Predições XGBoost
+│
+├── notebooks/
+│   ├── Analise_Base_Vinhos.ipynb     # EDA completa
+│   └── Comparacao_Resultados.ipynb   # Comparação final dos modelos
+│
+├── models/
+│   ├── logisticregression.ipynb      # Regressão Logística + SMOTE + GridSearch
+│   ├── randomforest.ipynb            # Random Forest + GridSearch + Threshold
+│   └── xgboost.ipynb                 # XGBoost + SMOTE + RandomizedSearch
+│
+├── results/                          # Gráficos e artefatos gerados
+├── requirements.txt                  # Dependências
+└── README.md                         # Este documento
+```
+
 ---
 
 ## 1. Problema
@@ -27,140 +77,34 @@ O dataset original contém notas de qualidade de 3 a 8, atribuídas por especial
 
 ## 3. Análise Exploratória (EDA)
 
-A EDA completa está disponível em `notebooks/Analise_Base_Vinhos.ipynb`. Foram gerados 6+ gráficos para suportar as decisões analíticas descritas abaixo.
+A EDA completa está disponível em `notebooks/Analise_Base_Vinhos.ipynb`.
 
-### 3.1 Carregamento e inspeção inicial
+### 3.1 Carregamento e limpeza
 
-O dataset `WineQT.csv` foi carregado com 1143 linhas e 13 colunas (12 features + `Id`). Todas as colunas apresentaram tipos de dados corretos e **nenhum valor nulo** foi encontrado. A coluna `quality` possui apenas 6 valores únicos (3 a 8), indicando que as notas são discretas e concentradas.
+O dataset `WineQT.csv` foi carregado com 1143 amostras e nenhum valor nulo. A coluna `Id` foi removida (sem valor preditivo) e **125 linhas duplicadas** foram identificadas e eliminadas, resultando em **1018 registros** únicos exportados para `data/base_wine_limpa.csv`.
 
-### 3.2 Limpeza dos dados
+### 3.2 Distribuição da qualidade
 
-- Remoção da coluna `Id` (identificador sequencial sem valor preditivo)
-- Identificação de **125 linhas duplicadas** após a remoção do `Id` — registros com valores físico-químicos idênticos mas com IDs diferentes
-- Decisão: **remoção das duplicatas**, pois não agregam informação nova ao modelo e podem causar vazamento de dados entre treino e teste
-- Base final: **1018 registros**
-- Dados exportados para `data/base_wine_limpa.csv`
-
-### 3.3 Distribuição da qualidade (Gráficos 1 e 2)
-
-**Gráfico 1** — gráfico de barras da variável `quality`:
-**Gráfico 2** — histograma da variável `quality`.
-
-A distribuição é concentrada nas notas 5 e 6 (~77% das amostras). Não há vinhos com nota abaixo de 3 nem acima de 8, indicando critérios de avaliação rigorosos.
-
-| Qualidade | Contagem | % |
-|---|---|---|
-| 3 | 7 | 0,7% |
-| 4 | 36 | 3,5% |
-| 5 | 382 | 37,6% |
-| 6 | 398 | 39,1% |
-| 7 | 155 | 15,2% |
-| 8 | 40 | 3,9% |
-
-Foi criada a coluna binária `cluster_quality`:
+As notas concentram-se em 5 e 6 (~77% das amostras). A variável foi binarizada:
 - **Alta Qualidade (1)**: nota ≥ 7 → **159 vinhos (~19%)**
 - **Qualidade Comum (0)**: nota < 7 → **859 vinhos (~81%)**
 
-**Decisão**: manter o desbalanceamento natural para tratamento via SMOTE nos modelos, em vez de balanceamento artificial na EDA.
+### 3.3 Estatísticas e hipóteses
 
-### 3.4 Estatísticas descritivas
+O teor alcoólico varia de 8,4% a 14,9% (média 10,4%). A hipótese de que **açúcar residual** influencia a qualidade foi testada via boxplot e correlação (r = 0,02) e **refutada** — não há relação preditiva significativa.
 
-O resumo estatístico (`df.describe()`) revelou:
-- Desvio padrão elevado em `residual sugar` (1,36 g/L), sugerindo heterogeneidade entre os vinhos
-- Média de `alcohol` em 10,44% com range de 8,4 a 14,9
-- Média de `volatile acidity` em 0,53 g/L com máximo de 1,58 g/L
+### 3.4 Correlações e variáveis relevantes
 
-### 3.5 Investigação de hipóteses
+A matriz de correlação e gráficos de densidade (KDE) identificaram os principais preditores de qualidade:
+- **Teor alcoólico** (correlação positiva mais forte) — vinhos de alta qualidade têm maior teor alcoólico
+- **Acidez volátil** (correlação negativa mais forte) — vinhos de alta qualidade têm menor acidez volátil
+- **Sulfatos** e **ácido cítrico** — correlação positiva moderada
 
-**Hipótese: açúcar residual influencia a qualidade?**
+### 3.5 Decisões de pré-processamento
 
-Foi gerado um **boxplot de `residual sugar` por `quality`** e calculada a correlação (r = 0,02). **Conclusão**: açúcar residual isoladamente **não é um fator preditivo** de qualidade.
-
-### 3.6 Matriz de correlação (Gráfico 3)
-
-**Gráfico 3** — heatmap da matriz de correlação entre todas as variáveis físico-químicas.
-
-**Correlações com a qualidade (target):**
-
-| Variável | Correlação (r) | Interpretação |
-|---|---|---|
-| Teor alcoólico | **+0,49** | Quanto maior o álcool, maior a qualidade |
-| Acidez volátil | **-0,41** | Quanto menor a acidez volátil, maior a qualidade |
-| Sulfatos | +0,26 | Correlação positiva moderada |
-| Ácido cítrico | +0,24 | Correlação positiva moderada |
-| Densidade | -0,17 | Correlação negativa fraca |
-| Cloretos | -0,13 | Correlação negativa fraca |
-| pH | -0,06 | Correlação muito fraca |
-| Dióxido de enxofre livre | -0,05 | Correlação muito fraca |
-| Açúcar residual | -0,03 | Correlação praticamente nula |
-| Acidez fixa | +0,01 | Correlação praticamente nula |
-| Dióxido de enxofre total | -0,01 | Correlação praticamente nula |
-
-**Gráfico 4** — barras da força absoluta de correlação (`|r|`), ordenando todas as variáveis por impacto na qualidade.
-
-### 3.7 Análise das variáveis mais correlacionadas
-
-**Top 5 positivas** (Gráfico 5 — scatter `alcohol` vs `quality`):
-1. Álcool (+0,49)
-2. Sulfatos (+0,26)
-3. Ácido cítrico (+0,24)
-4. Acidez fixa (+0,12)
-5. Açúcar residual (+0,02)
-
-**Top 5 negativas** (Gráfico 6 — scatter `volatile acidity` vs `quality`):
-1. Acidez volátil (-0,41)
-2. Densidade (-0,19)
-3. Dióxido de enxofre total (-0,18)
-4. Cloretos (-0,12)
-5. Dióxido de enxofre livre (-0,07)
-
-### 3.8 Análise de distribuições por cluster
-
-**Gráfico de KDE** (density plots) para todas as variáveis, separadas por `cluster_quality`:
-- `alcohol` apresenta diferença nítida entre os clusters: vinhos de alta qualidade concentram-se em teores alcoólicos mais altos (~11-12%)
-- `volatile acidity` mostra o inverso: alta qualidade concentra-se em valores mais baixos
-- `sulphates` e `citric acid` também apresentam separação visível
-
-**Decisão**: a diferença de distribuições entre os clusters confirma que as variáveis com maior separação são fortes candidatas a preditoras.
-
-**Boxplots por cluster** para análise de outliers:
-- Presença significativa de outliers em `residual sugar`, `chlorides`, `free sulfur dioxide`, `total sulfur dioxide`
-- **Decisão**: optou-se pela **padronização (StandardScaler)** em vez de normalização Min-Max, por ser mais robusta a outliers
-
-### 3.9 Pairplot
-
-**Pairplot** de todas as variáveis com hue por `cluster_quality`:
-- Relações bivariadas entre álcool e densidade mostram padrão de dependência linear inversa
-- `pH` e `fixed acidity` apresentam relação química esperada (ácido fraco)
-- A separação visual entre clusters é mais evidente nos pares que envolvem `alcohol`, `volatile acidity` e `sulphates`
-
-### 3.10 Scatter plots de relações químicas
-
-Scatter plots específicos investigaram relações entre variáveis quimicamente vinculadas:
-- **Álcool vs Densidade**: relação inversa clara — fermentação converte açúcar em álcool, reduzindo a densidade. Vinhos de alta qualidade tendem a ter maior álcool e menor densidade.
-- **Cloretos vs Densidade**: correlação positiva, sem separação expressiva entre clusters
-- **Acidez fixa vs pH**: relação inversa esperada
-- **Acidez fixa vs Densidade**: relação positiva, consistente com a química de soluções
-
-### 3.11 Pesquisa externa
-
-Foi consultado o artigo da **Carnegie Mellon University** (CMU, 2024) sobre predição de qualidade de vinhos ([link](https://www.stat.cmu.edu/capstoneresearch/fall2024/315files_f24/team8.html)), que corroborou os achados:
-- Álcool é o preditor mais forte de qualidade
-- Densidade e álcool são quimicamente dependentes (multicolinearidade)
-- Random Forest é robusto a essa dependência pela aleatorização das variáveis
-
-### 3.12 Decisões de pré-processamento
-
-Com base na EDA, as seguintes decisões foram tomadas:
-- **Padronização (StandardScaler)**: escolhida por haver outliers significativos na base
-- **Pré-processamento por modelo**: será aplicado individualmente em cada notebook de modelagem, pois cada algoritmo tem requisitos específicos:
-  - **Regressão Logística**: requer padronização (sensível à escala)
-  - **Random Forest**: não requer padronização (baseado em árvores, robusto a escalas)
-  - **XGBoost**: não requer padronização (baseado em árvores, robusto a escalas)
-
-### 3.13 Insight sobre multicolinearidade
-
-Teor alcoólico e densidade apresentam **dependência química**: durante a fermentação, o açúcar se transforma em álcool, reduzindo naturalmente a densidade do líquido. Essa relação foi confirmada pelo heatmap de correlação, pelo pairplot, e pelo artigo da CMU. Modelos baseados em árvores (Random Forest, XGBoost) lidam bem com essa dependência devido à aleatorização das variáveis em cada nó de decisão.
+- **StandardScaler** foi escolhido pela presença de outliers, aplicado apenas na Regressão Logística (algoritmo sensível à escala)
+- **Random Forest e XGBoost** não requerem padronização por serem baseados em árvores
+- O desbalanceamento natural foi mantido para tratamento via SMOTE durante a modelagem
 
 ---
 
@@ -419,19 +363,6 @@ Acurácia: 0,85 | AUC: 0,9046
 
 Matriz de confusão: `[[234, 31], [15, 26]]`
 
-#### Síntese das estratégias
-
-| Estratégia | Precision | Recall | F1 |
-|---|---|---|---|
-| Baseline (threshold 0,50) | 0,72 | 0,51 | 0,60 |
-| Threshold 0,30 | 0,63 | 0,59 | 0,61 |
-| Scale Pos Weight | 0,61 | 0,61 | 0,61 |
-| SMOTE | 0,51 | 0,68 | 0,58 |
-| RandomizedSearch + SMOTE | 0,50 | 0,63 | 0,56 |
-| **RandomizedSearch + threshold 0,35** | **0,46** | **0,63** | **0,53** |
-
-**Decisão**: o modelo final foi o RandomizedSearchCV com threshold 0,35, priorizando Recall de 0,63 (identificar ~26 dos 41 vinhos de alta qualidade) com AUC de 0,9046.
-
 #### Exportação
 Resultados salvos em `data/resultados_xgboost.csv`.
 
@@ -479,48 +410,6 @@ O Random Forest foi escolhido como modelo final pelos seguintes critérios:
 
 4. **Teor alcoólico e acidez volátil são os principais preditores**: consistente com a literatura de enologia — vinhos de maior qualidade tendem a ter maior teor alcoólico e menor acidez volátil.
 
-5. **A multicolinearidade entre álcool e densidade não prejudicou os modelos ensemble**, que lidam naturalmente com essa característica dos dados.
-
 ---
 
-## 9. Estrutura do projeto
 
-```
-PosGraduacao_DataAnalytics---Machine-Learning---Grupo-31/
-│
-├── data/
-│   ├── WineQT.csv                    # Dataset original
-│   ├── base_wine_limpa.csv           # Após limpeza (EDA)
-│   ├── resultados_logistica.csv      # Predições Regressão Logística
-│   ├── resultados_random_forest.csv  # Predições Random Forest
-│   └── resultados_xgboost.csv        # Predições XGBoost
-│
-├── notebooks/
-│   ├── Analise_Base_Vinhos.ipynb     # EDA completa
-│   └── Comparacao_Resultados.ipynb   # Comparação final dos modelos
-│
-├── models/
-│   ├── logisticregression.ipynb      # Regressão Logística + SMOTE + GridSearch
-│   ├── randomforest.ipynb            # Random Forest + GridSearch + Threshold
-│   └── xgboost.ipynb                 # XGBoost + SMOTE + RandomizedSearch
-│
-├── results/                          # Gráficos e artefatos gerados
-├── requirements.txt                  # Dependências
-└── README.md                         # Este documento
-```
-
----
-
-## 10. Equipe — Grupo 31
-
-| Nome | GitHub |
-|---|---|
-| Carlos Henrique Freitas | [Finnagun](https://github.com/Finnagun) |
-| Vinicius Lopes Romão | [viniromao159](https://github.com/viniromao159) |
-| Maycon Suel da Silva Nunes | [MayconNune](https://github.com/MayconNune) |
-
----
-
-**Curso**: Pós-Graduação em Data Analytics — POSTECH  
-**Fase**: Tech Challenge — Fase 2  
-**Grupo**: 31
