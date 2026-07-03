@@ -47,11 +47,16 @@ PosGraduacao_DataAnalytics---Machine-Learning---Grupo-31/
 │   ├── randomforest.ipynb            # Random Forest + GridSearch + Threshold
 │   └── xgboost.ipynb                 # XGBoost + SMOTE + RandomizedSearch
 │
-├── results/                          # Gráficos e artefatos gerados
+├── results/
+│   ├── 1_AUC.png                     # Curva ROC comparando os 3 modelos
+│   ├── 2_comparacao_modelos.png      # Matrizes de confusão + ROC individual por modelo
+│   ├── 3_comparacao_final.png        # Tabela final de métricas (threshold = 0.35)
+│   └── relatorio_executivo.pdf       # Storytelling da EDA
+│
 ├── requirements.txt                  # Dependências
 └── README.md                         # Este documento
 ```
-
+> **Nota sobre a estrutura:** o desafio recomenda uma pasta `src/` para scripts auxiliares. Optamos por organizar a modelagem em `models/`, com um notebook por algoritmo (`logisticregression.ipynb`, `randomforest.ipynb`, `xgboost.ipynb`), para manter visível e rastreável todo o processo de tuning (GridSearch, SMOTE, ajuste de threshold) — decisão documentada, e não script de produção.
 ---
 
 ## 1. Problema
