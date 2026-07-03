@@ -61,7 +61,7 @@ O dataset original contém notas de qualidade de 3 a 8, atribuídas por especial
 - **Alta Qualidade (1)**: nota original ≥ 7
 - **Qualidade Comum (0)**: nota original < 7
 
-**Desafio**: classes desbalanceadas — apenas ~19% das amostras são de alta qualidade.
+**Desafio**: classes desbalanceadas — apenas 14% das amostras são de alta qualidade.
 
 ---
 
@@ -86,8 +86,8 @@ O dataset `WineQT.csv` foi carregado com 1143 amostras e nenhum valor nulo. A co
 ### 3.2 Distribuição da qualidade
 
 As notas concentram-se em 5 e 6 (~77% das amostras). A variável foi binarizada:
-- **Alta Qualidade (1)**: nota ≥ 7 → **159 vinhos (~19%)**
-- **Qualidade Comum (0)**: nota < 7 → **859 vinhos (~81%)**
+- **Alta Qualidade (1)**: nota ≥ 7 → **137 vinhos (13.46%)**
+- **Qualidade Comum (0)**: nota < 7 → **881 vinhos (86.54%)**
 
 ### 3.3 Estatísticas e hipóteses
 
