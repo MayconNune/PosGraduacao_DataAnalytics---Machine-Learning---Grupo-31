@@ -373,6 +373,27 @@ Resultados salvos em `data/resultados_xgboost.csv`.
 
 ---
 
+### 5.4 Validação Cruzada (10-Fold)
+
+Para checar a robustez da escolha do modelo, os três modelos finais foram
+reavaliados com **10-fold cross-validation estratificado**, aplicando a
+mesma configuração final (hiperparâmetros, SMOTE, StandardScaler) e
+threshold (0,35) usados no split único de teste.
+
+| Modelo               | Precision | Recall | F1-Score | Acurácia | AUC    |
+|-----------------------|-----------|--------|----------|----------|--------|
+| Regressão Logística   | 0,32      | 0,85   | 0,46     | 0,73     | 0,8789 |
+| **Random Forest**     | **0,50**  | 0,60   | **0,54** | 0,87     | 0,8793 |
+| XGBoost               | 0,45      | 0,61   | 0,52     | 0,85     | 0,8775 |
+
+**Conclusão:** o ranking se mantém — Random Forest continua a melhor
+escolha por F1-Score. Os valores absolutos são mais conservadores que os
+observados no split único, o que é esperado (a média de múltiplas
+divisões corrige eventuais splits "favoráveis") e reforça que a decisão
+final do projeto está validada de forma independente.
+
+---
+
 ## 6. Comparação Final
 
 Threshold = 0,35 para todos os modelos.
